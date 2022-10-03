@@ -9,25 +9,32 @@
             Logs = logs;
         }
 
-        public void GetTop(int years, params string[] commands)
+        public int GetTop(int years, params string[] commands)
         {
-
+            var new_log = GetSortLogs(years);
 
             foreach(var team in commands)
             {
-                CheckTeam(team.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                CheckTeam(team.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries), new_log);
             }
+
+            return maxWins;
         }
-        private void CheckTeam(string[] persons)
+        private Log[] GetSortLogs(int yearsBack)
         {
-            var team = Logs.LastOrDefault(x => x.WinTeam == new Team(persons));
+            var date = DateTime.Today;
+            date.AddYears(-yearsBack);
+
+            return Logs.Where(x => x.WinDate >= date).ToArray();
+        }
+        private void CheckTeam(string[] persons, Log[] logs)
+        {
+            var team = logs.LastOrDefault(x => x.WinTeam == new Team(persons));
             if (team == null)
                 return;
 
             if (maxWins < team.WinTeam.WinCount)
                 maxWins = team.WinTeam.WinCount;
-
-
         }
     }
     public class Log
@@ -99,6 +106,11 @@
                 return false;
             }
 
+            throw new NotImplementedException();
+        }
+
+        public override int GetHashCode()
+        {
             throw new NotImplementedException();
         }
     }
